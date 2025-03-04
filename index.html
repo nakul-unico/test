@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refined API Consolidation Plan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        h1 {
+            border-bottom: 2px solid #4472C4;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .tab-container {
+            margin-top: 20px;
+        }
+        .tab-buttons {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .tab-button {
+            padding: 10px 15px;
+            background-color: #f1f1f1;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            font-size: 14px;
+        }
+        .tab-button:hover {
+            background-color: #ddd;
+        }
+        .tab-button.active {
+            background-color: #4472C4;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-top: none;
+            animation: fadeIn 0.5s;
+            overflow-x: auto;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .tab-content.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+            vertical-align: top;
+            font-size: 14px;
+        }
+        th {
+            background-color: #4472C4;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        .highlight {
+            background-color: #ffffcc;
+        }
+        .success {
+            background-color: #DFF0D8;
+        }
+        .warning {
+            background-color: #FCF8E3;
+        }
+        .danger {
+            background-color: #F2DEDE;
+        }
+        .phase {
+            font-weight: bold;
+            color: #4472C4;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .note {
+            font-style: italic;
+            color: #666;
+            margin-top: 5px;
+        }
+        .api-url {
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 12px;
+        }
+        .consolidated-api {
+            font-weight: bold;
+            color: #4472C4;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin-left: 5px;
+        }
+        .status-mergeable {
+            background-color: #5cb85c;
+        }
+        .status-non-mergeable {
+            background-color: #d9534f;
+        }
+        .status-complex {
+            background-color: #f0ad4e;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        #apiSearch {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .module-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: white;
+            background-color: #007bff;
+            margin-right: 5px;
+        }
+        .reason {
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Refined SERGO API Consolidation Plan</h1>
+        <p>This plan focuses on merging only APIs with truly similar functionality while keeping complex APIs separate. It considers cross-module similarities and role-based differences.</p>
+        
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="openTab(event, 'common-apis')">Cross-Module APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'user-apis')">User APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'property-apis')">Property APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'ticket-apis')">Ticket APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'cleaning-apis')">Cleaning APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'complex-apis')">Complex APIs</button>
+                <button class="tab-button" onclick="openTab(event, 'implementation')">Implementation Plan</button>
+            </div>
+            
+            <!-- Tab: Cross-Module APIs -->
+            <div id="common-apis" class="tab-content active">
+                <h2>Cross-Module APIs with Similar Functionality</h2>
+                <p>These API groups span multiple modules but serve similar functions and can be consolidated.</p>
+                
+                <h3>1. Property Retrieval APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/get_property</td>
+                            <td>additional-service</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/properties</td>
+                            <td rowspan="3">Similar data, different modules</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-owners/property</td>
+                            <td>owners</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-property_reservationDetails/properties</td>
+                            <td>property_reservationDetails</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. User Details APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/userDetails</td>
+                            <td>users</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/users/details</td>
+                            <td rowspan="2">Duplicate functionality</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/userDetails</td>
+                            <td>user</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. Image Management APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-aws/image-aws</td>
+                            <td>aws</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/images</td>
+                            <td rowspan="2">Related image functionality</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-owners/owner/property/images</td>
+                            <td>owners</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4. Employee Management APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/external-employees</td>
+                            <td>users</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/employees</td>
+                            <td rowspan="3">Employee management across modules</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/internal-employees</td>
+                            <td>users</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-owners/owner-internal-employees</td>
+                            <td>owners</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>5. Notes APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/add_note</td>
+                            <td>cleanerapp</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/notes</td>
+                            <td rowspan="3">Common note functionality</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/add-note</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-notes/create</td>
+                            <td>notes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: User Management APIs -->
+            <div id="user-apis" class="tab-content">
+                <h2>User Management APIs</h2>
+                <p>These APIs relate to user management but should be grouped by specific functionality.</p>
+                
+                <h3>1. Authentication & Security APIs (Keep Separate)</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="60%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="25%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/login</td>
+                            <td>user</td>
+                            <td>Security-critical authentication functionality</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/security</td>
+                            <td>users</td>
+                            <td>Security management separate from user data</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/reset-token-verification</td>
+                            <td>user</td>
+                            <td>Security-critical validation flow</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. User Profile APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/profile</td>
+                            <td>user</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/users/profile</td>
+                            <td rowspan="2">User profile management</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/update-profile</td>
+                            <td>user</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. User Registration APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/registration</td>
+                            <td>users</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/users/registration</td>
+                            <td rowspan="2">User registration process</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/verify-email</td>
+                            <td>users</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4. Password Management APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/update-password</td>
+                            <td>users</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/users/password</td>
+                            <td rowspan="3">Password operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/reset-password</td>
+                            <td>users</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/password-reset</td>
+                            <td>user</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>5. User Preferences APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/preferences</td>
+                            <td>user</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/users/preferences</td>
+                            <td rowspan="2">User preference settings</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/notifications</td>
+                            <td>users</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: Property APIs -->
+            <div id="property-apis" class="tab-content">
+                <h2>Property Management APIs</h2>
+                <p>APIs related to property configuration and management grouped by specific functionality.</p>
+                
+                <h3>1. Property Configuration APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/property-type</td>
+                            <td>additional-service</td>
+                            <td class="consolidated-api" rowspan="4">/api/v1/properties/configuration</td>
+                            <td rowspan="4">Property configuration settings</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/unit-type</td>
+                            <td>additional-service</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/property/settings</td>
+                            <td>additional-service</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/property/rules</td>
+                            <td>additional-service</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. Bedroom Configuration APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/bed-types</td>
+                            <td>additional-service</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/properties/bedrooms</td>
+                            <td rowspan="2">Bedroom settings</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/bedroom-configuration</td>
+                            <td>additional-service</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. Property Amenities APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/amenities</td>
+                            <td>additional-service</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/properties/amenities</td>
+                            <td rowspan="2">Property amenities and features</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/property-features</td>
+                            <td>additional-service</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4. Property Services APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/services</td>
+                            <td>additional-service</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/properties/services</td>
+                            <td rowspan="2">Property services</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-additional-service/check-in-out</td>
+                            <td>additional-service</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>5. Reservation APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-property_reservationDetails/reservations</td>
+                            <td>property_reservationDetails</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/reservations</td>
+                            <td rowspan="2">Reservation management</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-maintenance/get_property_reservations</td>
+                            <td>maintenance</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: Ticket APIs -->
+            <div id="ticket-apis" class="tab-content">
+                <h2>Ticket Management APIs</h2>
+                <p>Ticket-related APIs grouped by specific functionality, not just all merged into one.</p>
+                
+                <h3>1. Ticket Creation & Update APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/create</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="4">/api/v1/tickets/manage</td>
+                            <td rowspan="4">Core ticket CRUD operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/update</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/create-ticket</td>
+                            <td>cleans</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/update-ticket</td>
+                            <td>cleans</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. Ticket Assignment APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/assign</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/tickets/assignments</td>
+                            <td rowspan="3">Ticket assignment operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/arrival-departure-inner/ticket-assign-form</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/assign-cleaner</td>
+                            <td>cleans</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. Ticket Status APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/status-update</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/tickets/status</td>
+                            <td rowspan="2">Status management operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/update-status</td>
+                            <td>cleans</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4. Ticket Details APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/arrival-depature-ticketDetails</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/tickets/details</td>
+                            <td rowspan="2">Ticket details retrieval</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/ticket_details</td>
+                            <td>cleans</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>5. Ticket Filtering & Search APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/filter-search</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="4">/api/v1/tickets/search</td>
+                            <td rowspan="4">Ticket searching and filtering</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/filter</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/filter-count</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/active-filter</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>6. Ticket Reports & Statistics APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/stats</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="5">/api/v1/tickets/reports</td>
+                            <td rowspan="5">Reporting and statistics</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/dashboard</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/reports</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/report</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans/ext_contractor/cleans_count</td>
+                            <td>cleans</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>7. Ticket History APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/get-history</td>
+                            <td>ticket</td>
+                            <td class="consolidated-api" rowspan="3">/api/v1/tickets/history</td>
+                            <td rowspan="3">Ticket history operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/property-history</td>
+                            <td>ticket</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/history</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: Cleaning APIs -->
+            <div id="cleaning-apis" class="tab-content">
+                <h2>Cleaning Service APIs</h2>
+                <p>APIs related to cleaning services grouped by specific functionality.</p>
+                
+                <h3>1. Cleaning Companies APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleaningCompanies/company-list</td>
+                            <td>cleaningCompanies</td>
+                            <td class="consolidated-api" rowspan="4">/api/v1/cleaning/companies</td>
+                            <td rowspan="4">Cleaning company management</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleaningCompanies/external-company-list</td>
+                            <td>cleaningCompanies</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleaningCompanies/list/service</td>
+                            <td>cleaningCompanies</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleaningCompanies/create</td>
+                            <td>cleaningCompanies</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. Property Cleaning APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/clean</td>
+                            <td>cleanerapp</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/cleaning/properties</td>
+                            <td rowspan="2">Property cleaning operations</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/property-clean-company</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. Cleaning Statistics APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="20%">New Consolidated API</th>
+                            <th width="15%">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/cleans_count_v2</td>
+                            <td>cleanerapp</td>
+                            <td class="consolidated-api" rowspan="2">/api/v1/cleaning/statistics</td>
+                            <td rowspan="2">Cleaning statistics</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleanerapp/get_cleans_v2</td>
+                            <td>cleanerapp</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: Complex APIs -->
+            <div id="complex-apis" class="tab-content">
+                <h2>Complex APIs to Keep Separate</h2>
+                <p>These APIs have complex internal conditions, specific business logic, or unique requirements that make them unsuitable for merging.</p>
+                
+                <h3>1. Security-Critical APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="35%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/login</td>
+                            <td>user</td>
+                            <td>Authentication with complex security requirements</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-users/security</td>
+                            <td>users</td>
+                            <td>Security management specific logic</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-user/reset-token-verification</td>
+                            <td>user</td>
+                            <td>Security token validation with specific flow</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>2. Third-Party Integration APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="35%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/external-contractor/maintainance/main-page/modal/assign-ticket</td>
+                            <td>ticket</td>
+                            <td>External contractor integration with specific error handling</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/external-contractor/maintainance/main-page/counters</td>
+                            <td>ticket</td>
+                            <td>External system integration with unique requirements</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-ticket/external-contractor/maintainance/main-page/modal</td>
+                            <td>ticket</td>
+                            <td>Complex external system integration</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>3. Form Submission APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="35%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-cleans-form-submission/submit</td>
+                            <td>cleans-form-submission</td>
+                            <td>Complex form validation and processing</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-maintenance-form-submission/submit</td>
+                            <td>maintenance-form-submission</td>
+                            <td>Form processing with domain-specific validation</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>4. PDF Generation APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="35%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-pdf-generation/arrival-depature-ticketDetails_pdf</td>
+                            <td>pdf-generation</td>
+                            <td>Complex document generation with specific templates</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-pdf-generation/cleans_ticket_details_pdf</td>
+                            <td>pdf-generation</td>
+                            <td>Domain-specific PDF rendering logic</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-pdf-generation/maintenance/ticket_details_pdf</td>
+                            <td>pdf-generation</td>
+                            <td>Specialized PDF generation with unique business rules</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-pdf-generation/owners-welcome-letter-pdf</td>
+                            <td>pdf-generation</td>
+                            <td>Document generation with unique template and data</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>5. Internal System APIs</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="50%">Current API</th>
+                            <th width="15%">Module</th>
+                            <th width="35%">Reason to Keep Separate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-internal/logs</td>
+                            <td>internal</td>
+                            <td>System-level logging with unique requirements</td>
+                        </tr>
+                        <tr>
+                            <td class="api-url">https://api.sergo.com/api:qa-internal/metrics</td>
+                            <td>internal</td>
+                            <td>Monitoring and metrics with specific patterns</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Tab: Implementation Plan -->
+            <div id="implementation" class="tab-content">
+                <h2>Refined Implementation Strategy</h2>
+                <p>This approach focuses on merging only APIs with truly similar functionality while respecting domain boundaries and complex internal conditions.</p>
+                
+                <h3>Key Principles</h3>
+                <ol>
+                    <li><strong>Functional Similarity:</strong> Only merge APIs that perform similar functions, not just because they belong to the same domain</li>
+                    <li><strong>Cross-Module Identification:</strong> Look for similar functionality across different modules</li>
+                    <li><strong>Complex Logic Separation:</strong> Keep APIs with complex internal conditions separate</li>
+                    <li><strong>Role-Based Consideration:</strong> Respect role-based differences in similar APIs</li>
+                    <li><strong>Granular Consolidation:</strong> Create specific endpoints rather than overly generic ones</li>
+                </ol>
+                
+                <div class="phase">Phase 1: Cross-Module Core APIs (Estimated Time: 1-2 months)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Consolidated API</th>
+                            <th>Current API Count</th>
+                            <th>Priority</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="success">
+                            <td>/api/v1/properties</td>
+                            <td>3</td>
+                            <td>High</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="success">
+                            <td>/api/v1/images</td>
+                            <td>2</td>
+                            <td>High</td>
+                            <td>Low</td>
+                        </tr>
+                        <tr class="success">
+                            <td>/api/v1/employees</td>
+                            <td>3</td>
+                            <td>High</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="success">
+                            <td>/api/v1/notes</td>
+                            <td>3</td>
+                            <td>High</td>
+                            <td>Low</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="phase">Phase 2: User and Property Functionality (Estimated Time: 2-3 months)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Consolidated API</th>
+                            <th>Current API Count</th>
+                            <th>Priority</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="warning">
+                            <td>/api/v1/users/details</td>
+                            <td>2</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/users/profile</td>
+                            <td>2</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/users/registration</td>
+                            <td>2</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/users/password</td>
+                            <td>3</td>
+                            <td>Medium</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/properties/configuration</td>
+                            <td>4</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/properties/bedrooms</td>
+                            <td>2</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="phase">Phase 3: Ticket and Cleaning Core Operations (Estimated Time: 3-4 months)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Consolidated API</th>
+                            <th>Current API Count</th>
+                            <th>Priority</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="danger">
+                            <td>/api/v1/tickets/manage</td>
+                            <td>4</td>
+                            <td>High</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="danger">
+                            <td>/api/v1/tickets/assignments</td>
+                            <td>3</td>
+                            <td>High</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="danger">
+                            <td>/api/v1/tickets/status</td>
+                            <td>2</td>
+                            <td>High</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="danger">
+                            <td>/api/v1/tickets/details</td>
+                            <td>2</td>
+                            <td>High</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="danger">
+                            <td>/api/v1/cleaning/companies</td>
+                            <td>4</td>
+                            <td>Medium</td>
+                            <td>High</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="phase">Phase 4: Analytics and Reporting (Estimated Time: 2-3 months)</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Consolidated API</th>
+                            <th>Current API Count</th>
+                            <th>Priority</th>
+                            <th>Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="warning">
+                            <td>/api/v1/tickets/search</td>
+                            <td>4</td>
+                            <td>Medium</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/tickets/reports</td>
+                            <td>5</td>
+                            <td>Medium</td>
+                            <td>High</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/tickets/history</td>
+                            <td>3</td>
+                            <td>Low</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr class="warning">
+                            <td>/api/v1/cleaning/statistics</td>
+                            <td>2</td>
+                            <td>Low</td>
+                            <td>Medium</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Updated Implementation Approach</h3>
+                <ol>
+                    <li><strong>Granular Endpoint Design:</strong> Create specific, well-defined endpoints rather than overly generic ones</li>
+                    <li><strong>Parameter-Based Role Differentiation:</strong> Use query parameters or request body fields to handle role-specific variations</li>
+                    <li><strong>Proxy Pattern for Migration:</strong> Implement proxy APIs that route to old endpoints during transition</li>
+                    <li><strong>Complex Logic Separation:</strong> Keep APIs with complex validation, security, or business logic separate</li>
+                    <li><strong>Domain-Specific Mapping:</strong> Create mapping layers for domain-specific data transformations</li>
+                </ol>
+                
+                <h3>Benefits of Refined Approach</h3>
+                <ul>
+                    <li><strong>Improved Maintainability:</strong> Similar functionality is consolidated while preserving necessary separation</li>
+                    <li><strong>Reduced API Surface:</strong> Fewer endpoints to document and maintain</li>
+                    <li><strong>Better Domain Alignment:</strong> APIs are organized by actual functionality, not just module</li>
+                    <li><strong>Preserved Complex Logic:</strong> Business-critical complex APIs remain separate</li>
+                    <li><strong>Cross-Module Optimization:</strong> Similar functionality across modules is identified and consolidated</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabContent, tabButtons;
+            
+            // Hide all tab content
+            tabContent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabContent.length; i++) {
+                tabContent[i].classList.remove("active");
+            }
+            
+            // Remove "active" class from all tab buttons
+            tabButtons = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove("active");
+            }
+            
+            // Show the specific tab content
+            document.getElementById(tabName).classList.add("active");
+            
+            // Add "active" class to the button that opened the tab
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</body>
+</html>
